@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-# Check if the number of parameters is less than 4 and display usage
-# And if transfer the file
-if [ $# -lt 4 ]; then
+# Transfers a file to a remote server using SCP
+
+if [ "$#" -ne 4 ]; then
 	echo "Usage: 0-transfer_file PATH_TO_FILE IP USERNAME PATH_TO_SSH_KEY"
 	exit 1
 fi
-path_2_file=$1
-server_ip=$2
-username=$3
-ssh_key=$4
 
-scp -0 strictHostKeyChecking=no -i "$ssh_key" "$path_2_file" "$username"@"$server_ip":~/
+FILE_PATH=$1
+SERVER_IP=$2
+USERNAME=$3
+SSH_KEY=$4
+
+scp -o StrictHostKeyChecking=no -i "$SSH_KEY" "$FILE_PATH" "$USERNAME@$SERVER_IP:~/"
