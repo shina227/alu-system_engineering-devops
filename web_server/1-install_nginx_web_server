@@ -1,19 +1,18 @@
 #!/usr/bin/env bash
-# Installs and configures Nginx to serve a webpage
-# with "Holberton School".
+# Commands to install Nginx on Web-Server-01
 
-# Update package list and install Nginx
-apt-get update -y
-apt-get install nginx -y
+# Updating Packages before making Installations
+sudo apt-get update
+sudo apt-get -y install nginx
 
-# Start Nginx using service
-service nginx start
+# Configuring the Uncomplicated Firewall (UFW)
+sudo ufw allow 'Nginx HTTP'
 
-# Ensure Nginx starts on boot
-echo "service nginx start" >> /etc/rc.local
+# Creating an index.html page
+echo "Holberton School" | sudo tee /var/www/html/index.html
 
-# Modify the default HTML page
-echo "Holberton School for the win!" > /var/www/html/index.html
+# Testing Nginx configurations for Syntax errors
+sudo nginx -t
 
-# Restart Nginx using service
-service nginx restart
+# Restarting Nginx
+sudo service nginx start
