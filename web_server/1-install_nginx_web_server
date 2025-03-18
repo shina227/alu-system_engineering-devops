@@ -1,15 +1,8 @@
 #!/usr/bin/env bash
-# Commands to install Nginx on Web-Server-01
+# Install and configure Nginx
 
-# Updating Packages before making Installations
-apt-get update -y
-apt-get install nginx -y
-
-# Configuring the Uncomplicated Firewall (UFW)
-sudo ufw allow 'Nginx HTTP'
-
-# Creating an index.html page
-sh -c 'echo "Hello World!" > /var/www/html/index.html'
-
-# Restarting Nginx
+apt update -y
+apt install nginx -y
+echo "Holberton School for the win!" | tee /var/www/html/index.html
+sed -i 's/80/8080/g' /etc/nginx/sites-enabled/default
 service nginx restart
