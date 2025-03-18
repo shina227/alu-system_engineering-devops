@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 # Install and configure Nginx
 
-apt update -y
-apt install nginx -y
-echo "Holberton School for the win!" | tee /var/www/html/index.html
-sed -i 's/80/8080/g' /etc/nginx/sites-enabled/default
-service nginx restart
+sudo apt update
+sudo apt-get -y install nginx
+
+sudo ufw allow 'Nginx HTTP'
+
+echo "Holberton School" | sudo tee /var/www/html/index.html
+
+sudo nginx -t 
+sudo service nginx start
