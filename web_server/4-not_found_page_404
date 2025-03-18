@@ -1,37 +1,22 @@
 #!/usr/bin/env bash
-# Script to install Nginx and configure a custom 404 error page
-
-# Install Nginx if it's not installed
-apt-get update
-apt-get install -y nginx
-
-# Create the custom 404 page
+# Configure nginx server to have a custom 404 page
+sudo apt-get update
+sudo apt-get -y install nginx
+sudo chown -R "$USER":"$USER" /var/www/html
 echo "Ceci n'est pas une page" > /var/www/html/404.html
 
-# Update the Nginx configuration file
-cat > /etc/nginx/sites-available/default << EOF
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-
-    root /var/www/html;
-    index index.html index.htm;
-
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-
-    location /redirect_me {
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-    }
-
-    error_page 404 /404.html;
-    location = /404.html {
-        internal;
-    }
-}
-EOF
-
-# Restart Nginx to apply changes
-sudo systemctl restart nginx
-
+config_file=\
+"server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+	server_name _;
+	error_page 404 /404.html
+	root /var/www/html;
+	index index.html index.htm index.nginx-debian.html;
+	location / {
+		try_files $uri \$uri/ =404;
+ }
+}"
+sudo chown -R "$USER":"$USER" /etc/nginx/sites-available/default
+echo "$config_file" > /etc/nginx/sites-available/default
+sudo service nginx restart
