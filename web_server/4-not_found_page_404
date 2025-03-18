@@ -1,27 +1,37 @@
 #!/usr/bin/env bash
-# Configure nginx server to have a custom 404 page
-sudo apt-get update
-sudo apt-get -y install nginx
-echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html > /dev/null
+# Bash script to install Nginx and configure a custom 404 page
 
-config_file="server {
-	listen 80 default_server;
-	listen [::]:80 default_server;
-	server_name _;
-	
-	root /var/www/html;
-	index index.html index.htm index.nginx-debian.html;
-	
-	error_page 404 /404.html;
+# Update package lists and install Nginx
+apt-get update -y
+apt-get install -y nginx
 
-	location / {
-	    try_files $uri \$uri/ =404;
-	}
+# Create an index.html file with required content
+echo "Holberton School" > /var/www/html/index.html
 
-	location = /404.html {
-	    internal;
-	}
-}"
+# Create a custom 404 page
+echo "Ceci n'est pas une page" > /var/www/html/404.html
 
-echo "$config_file" | sudo tee /etc/nginx/sites-available/default > /dev/null
-sudo systemctl restart nginx
+# Configure Nginx to serve the index file, redirection, and custom 404 page
+printf %s "server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html index.htm;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+    }
+
+    error_page 404 /404.html;
+    location = /404.html {
+	internal;
+    }
+}" > /etc/nginx/sites-available/default
+
+# Restart Nginx to apply changes
+sudo service nginx restart                                                                    
