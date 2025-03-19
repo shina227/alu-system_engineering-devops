@@ -1,27 +1,25 @@
 #!/usr/bin/env bash
-# Install HAProxy & configure load balancing
+# This script installs and configures HAProxy as a load balancer
 
 # Update and install HAProxy
-apt-get update -y
-apt-get install -y haproxy
+sudo apt update
+sudo apt install -y haproxy
 
-# Enable HAProxy
-echo "ENABLED=1" > /etc/default/haproxy
+# Backup the original HAProxy config
+sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.bak
 
-# Configure HAProxy
-cat <<EOF > /etc/haproxy/haproxy.cfg
+# Configure HAProxy to balance traffic
+sudo bash -c 'cat <<EOF > /etc/haproxy/haproxy.cfg
 frontend http_front
     bind *:80
     default_backend web_servers
 
-backend web_servers
+    backend web_servers
     balance roundrobin
-    option httpchk
-    http-request add-header X-Served-By %[hostname]
-    server 6525-web-01 3.82.240.31:80 check
-    server 6525-web-02 52.90.245.197:80 check
-EOF
+    server web-01 3.82.240.31:80 check
+    server web-02 52.90.245.197:80 check
+EOF'
 
-# Restart HAProxy to apply changes
-systemctl enable haproxy
-systemctl restart 
+# Restart HAProxy
+sudo systemctl restart haproxy
+
