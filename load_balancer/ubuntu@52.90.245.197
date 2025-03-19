@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Bash script to install Nginx and configure a custom response header
+
+# Update package lists and install Nginx
+apt-get update -y
+apt-get install -y nginx
+
+# Create an index.html file with required content
+echo "Holberton School" > /var/www/html/index.html
+
+# Create a custom 404 page
+echo "Ceci n'est pas une page" > /var/www/html/404.html
+
+# Get the hostname of the server
+HOSTNAME=$(hostname)
+
+# Configure Nginx
+printf %s "server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html index.htm;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+        add_header X-Served-By \"$HOSTNAME\";
+    }
+
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+    }
+
+    error_page 404 /404.html;
+    location = /404.html {
+        internal;
+    }
+}" > /etc/nginx/sites-available/default
+
+# Ensure the correct symbolic link is in place
+ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
+# Test Nginx configuration
+nginx -t
+
+# Restart Nginx to apply changes
+service nginx restart
